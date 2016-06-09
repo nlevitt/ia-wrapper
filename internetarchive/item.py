@@ -542,7 +542,7 @@ class Item(BaseItem):
 
         size = get_file_size(body)
 
-        if not headers.get('x-archive-size-hint'):
+        if size is not None and not headers.get('x-archive-size-hint'):
             headers['x-archive-size-hint'] = str(size)
 
         # Build IA-S3 URL.
@@ -580,7 +580,10 @@ class Item(BaseItem):
             headers['Content-MD5'] = md5_sum
 
         def _build_request():
-            body.seek(0, os.SEEK_SET)
+            try:
+                body.seek(0, os.SEEK_SET)
+            except Exception as e:
+                pass
             if verbose:
                 try:
                     chunk_size = 1048576
